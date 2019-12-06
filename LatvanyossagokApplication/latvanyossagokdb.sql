@@ -1,0 +1,15 @@
+﻿CREATE TABLE varosok(
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	nev	VARCHAR(255) NOT NULL,
+	lakossag INT(255) NOT NULL
+);
+
+CREATE TABLE latvanyossagok( 
+	id INT PRIMARY KEY AUTO_INCREMENT, 
+	nev VARCHAR(255) NOT NULL, 
+	leiras VARCHAR(255) NOT NULL, 
+	ar INT,
+	varos_id INT NOT NULL, 
+	FOREIGN KEY (varos_id) 
+	REFERENCES varosok(id) 
+	);
