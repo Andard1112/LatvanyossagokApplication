@@ -226,7 +226,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Location = new System.Drawing.Point(379, 13);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(409, 147);
+            this.groupBox3.Size = new System.Drawing.Size(247, 147);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Város módosítása és törlése:";
@@ -243,7 +243,7 @@
             // 
             // varosModosit
             // 
-            this.varosModosit.Location = new System.Drawing.Point(234, 107);
+            this.varosModosit.Location = new System.Drawing.Point(81, 94);
             this.varosModosit.Name = "varosModosit";
             this.varosModosit.Size = new System.Drawing.Size(75, 23);
             this.varosModosit.TabIndex = 5;
@@ -324,6 +324,7 @@
             this.latvanyossagModosit.TabIndex = 7;
             this.latvanyossagModosit.Text = "OK";
             this.latvanyossagModosit.UseVisualStyleBackColor = true;
+            this.latvanyossagModosit.Click += new System.EventHandler(this.latvanyossagModosit_Click);
             // 
             // latvanyossagLeirasModosit
             // 

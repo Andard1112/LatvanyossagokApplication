@@ -27,6 +27,8 @@ namespace LatvanyossagokApplication
             latvanyossagLeirasModosit.Enabled = false;
             latvanyossagModosit.Enabled = false;
             varosModosit.Enabled = false;
+            latvanyossagLista.Enabled = false;
+            latvanyossagTorles.Enabled = false;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -36,9 +38,11 @@ namespace LatvanyossagokApplication
 
         void AdatokListazasa()
         {
+
             varosLista.Items.Clear();
-            varosListaModosit.Items.Clear();
+           
             latvanyossagLista.Items.Clear();
+
             var command = conn.CreateCommand();
             command.CommandText = @"SELECT id,nev,lakossag FROM varosok ORDER BY nev";
             using (var reader = command.ExecuteReader())
@@ -52,9 +56,10 @@ namespace LatvanyossagokApplication
 
                     var varosok = new Varosok(id, nev, lakossag);
                     varosLista.Items.Add(varosok);
-                    varosListaModosit.Items.Add(varosok);
+                    
                 }
             }
+            
         }
 
         private void varosHozzaad_Click(object sender, EventArgs e)
@@ -98,14 +103,14 @@ namespace LatvanyossagokApplication
         {
             try
             {
-                if (varosListaModosit.SelectedIndex == -1)
+                if (varosLista.SelectedIndex == -1)
                 {
                     MessageBox.Show("Válasszon ki egy elemet a törléshez!");
                     return;
                 }
                 var cmd = conn.CreateCommand();
                 cmd.CommandText = @"DELETE FROM varosok WHERE id = @id";
-                var varosok = (Varosok)varosListaModosit.SelectedItem;
+                var varosok = (Varosok)varosLista.SelectedItem;
                 cmd.Parameters.AddWithValue("@id", varosok.Id);
                 cmd.ExecuteNonQuery();
                 AdatokListazasa();
@@ -134,55 +139,42 @@ namespace LatvanyossagokApplication
 
         private void latvanyossagLista_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT id,nev,leiras,ar,varos_id FROM latvanyossagok WHERE varos_id = @varos_id ORDER BY nev";
+            latvanyossagTorles.Enabled = true;
+            latvanyossagNevModosit.Enabled = true;
+            latvanyossagLeirasModosit.Enabled = true;
+            latvanyossagArModosit.Enabled = true;
+            latvanyossagModosit.Enabled = true;
             var latvanyossagok = (latvanyossagok)latvanyossagLista.SelectedItem;
-            cmd.Parameters.AddWithValue("@varos_id", latvanyossagok.Id);
-            cmd.ExecuteNonQuery();
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    var id = reader.GetInt32("id");
-                    var nev = reader.GetString("nev");
-                    var leiras = reader.GetString("leiras");
-                    var ar = reader.GetInt32("ar");
-                    var varos_id = reader.GetInt32("varos_id");
-
-                    var ceflatvanyossag = new latvanyossagok(id, nev, leiras, ar, varos_id);
-
-                    latvanyossagNevModosit.Text = nev;
-                    latvanyossagLeirasModosit.Text = leiras;
-                    latvanyossagArModosit.Text = ar.ToString();
-
-                }
-
-            }
+            latvanyossagNevModosit.Text = latvanyossagok.Nev;
+            latvanyossagLeirasModosit.Text = latvanyossagok.Leiras;
+            latvanyossagArModosit.Value = latvanyossagok.Ar;
         }
 
         private void varosLista_SelectedIndexChanged(object sender, EventArgs e)
         {
             latvanyossagListaz();
+            varosListaz();
             latvanyossagNevModosit.Enabled = false;
             latvanyossagLeirasModosit.Enabled = false;
             latvanyossagArModosit.Enabled = false;
             latvanyossagModosit.Enabled = false;
-            
+            varosNevModosit.Enabled = true;
+            lakossagSzamModosit.Enabled = true;
+            varosModosit.Enabled = true;
+            latvanyossagLista.Enabled = true;
+
+            var varosok = (Varosok)varosLista.SelectedItem;
+            varosNevModosit.Text = varosok.Nev;
+            lakossagSzamModosit.Value = varosok.Lakossag;
 
         }
         private void latvanyossagListaz()
         {
             latvanyossagLista.Items.Clear();
-            latvanyossagNevModosit.Enabled = true;
-            latvanyossagLeirasModosit.Enabled = true;
-            latvanyossagArModosit.Enabled = true;
-            latvanyossagModosit.Enabled = true;
-            
             var cmd = conn.CreateCommand();
-            cmd.CommandText = @"SELECT id,nev,leiras,ar,varos_id FROM latvanyossagok WHERE varos_id = @varos_id ORDER BY nev";
-            var latvanyossagok = (Varosok)varosLista.SelectedItem;
-            cmd.Parameters.AddWithValue("@varos_id", latvanyossagok.Id);
-            cmd.ExecuteNonQuery();
+            cmd.CommandText = @"SELECT id,nev,leiras,ar,varos_id FROM latvanyossagok WHERE varos_id=@varos_id ORDER BY nev";
+            var varos = (Varosok)varosLista.SelectedItem;
+            cmd.Parameters.AddWithValue("@varos_id",varos.Id);
             using (var reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
@@ -193,24 +185,15 @@ namespace LatvanyossagokApplication
                     var ar = reader.GetInt32("ar");
                     var varos_id = reader.GetInt32("varos_id");
 
-                    var ceflatvanyossag = new latvanyossagok(id, nev, leiras, ar, varos_id);
-
-                    latvanyossagLista.Items.Add(ceflatvanyossag);
+                    var latvanyossagok = new latvanyossagok(id, nev, leiras, ar, varos_id);
+                    latvanyossagLista.Items.Add(latvanyossagok);
 
                 }
 
             }
         }
-
-        private void varosListaModosit_SelectedIndexChanged(object sender, EventArgs e)
+        private void varosListaz()
         {
-            varosNevModosit.Enabled = true;
-            lakossagSzamModosit.Enabled = true;
-            
-            varosModosit.Enabled = true;
-
-            latvanyossagListaz();
-            
             var command = conn.CreateCommand();
             command.CommandText = @"SELECT id,nev,lakossag FROM varosok ORDER BY nev";
             using (var reader = command.ExecuteReader())
@@ -220,20 +203,15 @@ namespace LatvanyossagokApplication
                     var id = reader.GetInt32("id");
                     var nev = reader.GetString("nev");
                     var lakossag = reader.GetInt32("lakossag");
-
-
-                    
-
-                    varosNevModosit.Text = nev;
-                    lakossagSzamModosit.Value = lakossag;
                 }
             }
-
         }
+
+        
 
         private void varosModosit_Click(object sender, EventArgs e)
         {
-            latvanyossagListaz();
+            
             if (string.IsNullOrWhiteSpace(varosNevModosit.Text) || lakossagSzamModosit.Value < 0)
             {
                 MessageBox.Show("Minden mezőt ki kell tölteni, és a lakosok számának nagyobbank kell lennie mint nulla!");
@@ -243,10 +221,42 @@ namespace LatvanyossagokApplication
             cmd.CommandText = @"UPDATE varosok SET nev=@nev,lakossag=@lakossag WHERE id=@id";
             cmd.Parameters.AddWithValue("@nev", varosNevModosit.Text);
             cmd.Parameters.AddWithValue("@lakossag", lakossagSzamModosit.Value);
-            var varosok = (Varosok)varosListaModosit.SelectedItem;
+            var varosok = (Varosok)varosLista.SelectedItem;
             cmd.Parameters.AddWithValue("@id",varosok.Id);
 
             cmd.ExecuteNonQuery();
+            AdatokListazasa();
+            varosNevModosit.Text = "";
+            lakossagSzamModosit.Value = 0;
+            varosNevModosit.Enabled = false;
+            lakossagSzamModosit.Enabled = false;
+            varosModosit.Enabled = false;
+        }
+
+        private void latvanyossagModosit_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(latvanyossagNevModosit.Text) || string.IsNullOrWhiteSpace(latvanyossagLeirasModosit.Text) ||  latvanyossagArModosit.Value < 0)
+            {
+                MessageBox.Show("Minden mezőt ki kell tölteni, és az árnak nagyobbank kell lennie mint nulla!");
+                return;
+            }
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = @"UPDATE latvanyossagok SET nev=@nev,leiras=@leiras,ar=@ar WHERE id=@id";
+            cmd.Parameters.AddWithValue("@nev",latvanyossagNevModosit.Text);
+            cmd.Parameters.AddWithValue("@leiras", latvanyossagLeirasModosit.Text);
+            cmd.Parameters.AddWithValue("@ar",latvanyossagArModosit.Value);
+            var latvanyossagok = (latvanyossagok)latvanyossagLista.SelectedItem;
+            cmd.Parameters.AddWithValue("@id", latvanyossagok.Id);
+
+            cmd.ExecuteNonQuery();
+            latvanyossagListaz();
+            latvanyossagNevModosit.Text = "";
+            latvanyossagLeirasModosit.Text = "";
+            latvanyossagArModosit.Value = 0;
+            latvanyossagNevModosit.Enabled = false;
+            latvanyossagLeirasModosit.Enabled = false;
+            latvanyossagArModosit.Enabled = false;
+            latvanyossagModosit.Enabled = false;
         }
     }
 }
