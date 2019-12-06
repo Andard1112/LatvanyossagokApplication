@@ -77,6 +77,8 @@ namespace LatvanyossagokApplication
             cmd.ExecuteNonQuery();
 
             AdatokListazasa();
+            varosNev.Text = "";
+            lakosokSzama.Value = 1;
         }
 
         private void latvanyossagHozzaad_Click(object sender, EventArgs e)
@@ -133,8 +135,11 @@ namespace LatvanyossagokApplication
             cmd.CommandText = @"DELETE FROM latvanyossagok WHERE id = @id";
             var latvanyossag = (latvanyossagok)latvanyossagLista.SelectedItem;
             cmd.Parameters.AddWithValue(@"id", latvanyossag.Id);
+            cmd.ExecuteNonQuery();
 
-            AdatokListazasa();
+            latvanyossagListaz();
+
+
         }
 
         private void latvanyossagLista_SelectedIndexChanged(object sender, EventArgs e)
